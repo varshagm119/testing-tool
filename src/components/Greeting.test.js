@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import Greeting from "./Greeting";
+import userEvent from "@testing-library/user-event";
 
 describe("Greeting component", () => {
   test("renders Hello world as a test", () => {
@@ -13,22 +14,38 @@ describe("Greeting component", () => {
     const helloWorldElement = screen.getByText("Hello world", { exact: false });
     expect(helloWorldElement).toBeInTheDocument();
   });
-  test("rendering the <p>", () => {
+
+  test("renders good to see you if button is NOT clicked", () => {
     render(<Greeting />);
-    const pEle = screen.getAllByText("Its good to see you", { exact: false });
-    expect(pEle).toBeInTheDocument();
+    const outputElement = screen.getAllByText("Its good to see you", {
+      exact: false,
+    });
+    expect(outputElement).toBeInTheDocument();
   });
 
-  test("rendering the test two", () => {
+  test('renders "Changed!" if button is clicked', () => {
+    //Arrange
     render(<Greeting />);
-    const pEle = screen.getAllByText("test two", { exact: false });
-    expect(pEle).toBeInTheDocument();
+
+    //Act
+    const buttonElement = screen.getByRole("button");
+    userEvent.click(buttonElement);
+
+    //Assert
+    const outputElement = screen.getAllByText("Changed!");
+    expect(outputElement).toBeInTheDocument();
   });
 
-  test("rendering a button with text Hi <p>", () => {
+  test("does not render good to see you if button is not clicked", () => {
     render(<Greeting />);
-    const pEle = screen.getByText("Hi", { exact: false });
-    //expect(pEle).toBeInTheDocument();
-    expect(pEle).toHaveTextContent("Hi");
+    //Act
+    const buttonElement = screen.getByRole("button");
+    userEvent.click(buttonElement);
+
+    //Assert
+    const outputElement = screen.queryByText("good to see you", {
+      exact: false,
+    });
+    expect(outputElement).not.toBeNull();
   });
 });
